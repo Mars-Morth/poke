@@ -2,7 +2,7 @@ name: Main source guard
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     types: [opened, reopened, synchronize, edited]
 
 jobs:
@@ -10,14 +10,19 @@ jobs:
     name: source-branch
     runs-on: ubuntu-latest
     steps:
-      - name: Require develop as the source branch
+      - name: Verify source branch
         env:
+          BASE_BRANCH: ${{ github.base_ref }}
           SOURCE_BRANCH: ${{ github.head_ref }}
           SOURCE_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           BASE_REPO: ${{ github.repository }}
         run: |
-          if [ "$SOURCE_BRANCH" != "develop" ] || [ "$SOURCE_REPO" != "$BASE_REPO" ]; then
-            echo "::error::Only pull requests from this repository's develop branch may target main."
-            exit 1
+          if [ "$BASE_BRANCH" = "main" ]; then
+            if [ "$SOURCE_BRANCH" != "develop" ] || [ "$SOURCE_REPO" != "$BASE_REPO" ]; then
+              echo "::error::Only pull requests from this repository's develop branch may target main."
+              exit 1
+            fi
+            echo "Pull request targets main from develop. Check passed."
+          else
+            echo "Pull request targets $BASE_BRANCH. Any source branch is allowed."
           fi
-
