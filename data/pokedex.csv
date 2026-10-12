@@ -1,0 +1,4 @@
+species,types,hp,atk,defe,satk,sdef,spe
+Bulbasaur,Grass/Poison,45,49,49,65,65,45
+Charmander,Fire,39,52,43,60,50,65
+Squirtle,Water,44,48,65,50,64,43
