@@ -1,7 +1,22 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
+
+from routers import daemon, server
 
 app = FastAPI()
+router = APIRouter()
+
+app.include_router(
+    daemon.router,
+    prefix="/daemon",
+    tags=["daemon"],
+)
+
+app.include_router(
+    server.router,
+    prefix="/server",
+    tags=["server"],
+)
 
 
 @app.get("/")
