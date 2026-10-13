@@ -1,0 +1,14 @@
+# this is the systemd file you do not run manually
+
+[Unit]
+Description=Poke daemon to connect to and poke your gym
+After=default.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/opt/poke/client
+ExecStart=%h/opt/poke/client/run_daemon.sh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
