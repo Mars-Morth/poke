@@ -1,9 +1,12 @@
 [Unit]
 Description=Poke deamon to connect to and poke your gym
+After=default.target
 
 [Service]
-ExecStart=/usr/bin/python3 /usr/bin/poke_daemon.py
+Type=simple
+WorkingDirectory=%h/opt/poke/client
+ExecStart=%h/opt/poke/client/run_daemon.sh
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
