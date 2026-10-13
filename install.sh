@@ -30,3 +30,12 @@ mkdir -p ${HOME}/.config/systemd/user
 cp ./client/poke.service ~/.config/systemd/user/poke.service
 systemctl --user daemon-reload
 systemctl --user enable --now poke.service  # NOTE: enable to be on start
+
+echo "*********************************************************************"
+echo "*********************************************************************"
+echo "*********************************************************************"
+echo "Finished installing"
+echo "Run: 'systemctl --user status poke' to check if the daemon is running"
+echo "*********************************************************************"
+echo "*********************************************************************"
+echo "*********************************************************************"

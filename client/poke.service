@@ -1,5 +1,7 @@
+# this is the systemd file you do not run manually
+
 [Unit]
-Description=Poke deamon to connect to and poke your gym
+Description=Poke daemon to connect to and poke your gym
 After=default.target
 
 [Service]
