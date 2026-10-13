@@ -1,0 +1,60 @@
+@startuml
+[*] --> Bootstrapping : Daemon start
+
+state Bootstrapping {
+    [*] --> Initialising
+    Initialising : Load mesh peer list & local VPN IP
+    Initialising --> ProbingNetwork : Ping peers for active server heartbeat
+}
+
+state ClientOnly {
+    state "Client Idle" as ClientIdle
+    ClientIdle : Connected to remote server
+    ClientIdle : Monitoring battle events & state
+    
+    state "Client In Battle" as ClientInBattle
+    ClientInBattle : Exchanging battle turns with remote server
+    
+    ClientIdle --> ClientInBattle : Match started
+    ClientInBattle --> ClientIdle : Match finished
+}
+
+state ClientAndServer {
+    state "Local Client Component" as LocalClient
+    LocalClient : Connected to localhost server instance
+    LocalClient : Monitoring / participating in battles locally
+
+    state "Server Component" as ServerComponent
+    ServerComponent : Hosting /server endpoints for all mesh peers
+    ServerComponent : Managing matchmaking & battles
+    ServerComponent : Broadcasting periodic heartbeat with local IP
+}
+
+state "Promoting to Server" as Promoting {
+    Promoting : Mount /server endpoints
+    Promoting : Initialise lobbies & battle registry
+    Promoting : Announce server presence with local IP
+}
+
+state "Relinquishing Server" as Relinquishing {
+    Relinquishing : Detected active server with lower IP (Remote IP < Local IP)
+    Relinquishing : Dismantle /server endpoints
+    Relinquishing : Retarget local client to lower IP remote server
+}
+
+Bootstrapping --> ClientOnly : Active server found (Server IP is valid)
+Bootstrapping --> Promoting : No server found on mesh (Timeout)
+
+ClientOnly --> Promoting : Server heartbeat lost / Server unreachable
+ClientOnly --> Promoting : Explicit promotion requested (CLI / RPC)
+
+Promoting --> ClientAndServer : Server initialised
+
+ClientAndServer --> Relinquishing : Received heartbeat from lower IP peer\n[Peer IP < Local IP]
+Relinquishing --> ClientOnly : Relinquishment complete
+
+ClientAndServer --> ClientAndServer : Received heartbeat from higher IP peer\n[Peer IP >= Local IP: Ignore conflict / Maintain server]
+
+ClientOnly --> [*] : Daemon stopped
+ClientAndServer --> [*] : Daemon stopped
+@enduml
