@@ -25,3 +25,7 @@ CLI sprites and artwork are displayed using [pokemon-colorscripts](https://gitla
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+## Little Guy
+<img width="558" height="544" alt="Screenshot 2026-10-13 092850" src="https://github.com/user-attachments/assets/ab4ff70e-d5c2-462e-ba5e-68318cff3689" />
+
