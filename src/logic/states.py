@@ -1,29 +1,28 @@
 from abc import ABC, abstractmethod
 
+from context import DaemonContext
+
 
 class State(ABC):
-    @abstractmethod
-    def __init__(self, context):
+    def __init__(self, context: DaemonContext):
         self.context = context
-        self.name = "State"
+
+    def __str__(self) -> str:
+        return self.name
 
     @property
     def name(self):
-        return self._name
+        return type(self).__name__
 
-    @name.setter
-    def name(self, name):
-        self._name = name
-
-    @abstractmethod
-    def enter(self, name):
+    # @abstractmethod
+    def enter(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def exit(self):
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def process(self):
         pass
 
