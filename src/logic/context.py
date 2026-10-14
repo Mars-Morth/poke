@@ -1,9 +1,8 @@
-import ipaddress
 import logging
 import subprocess
 from typing import ClassVar
 
-from states import (
+from logic.states import (
     Bootstrapping,
     ClientAndServer,
     ClientOnly,
