@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 TRAINERS = [
     "Ash",
@@ -10,8 +10,12 @@ router = APIRouter()
 
 
 @router.get("/")
-def root():
-    return None
+def root(request: Request):
+    return {
+        "status": "ok",
+        "role": request.app.state.context.current_state.name,
+        "server_ip": str(request.app.state.context._active_server_ip),
+    }
 
 
 @router.get("/trainers")

@@ -1,10 +1,13 @@
 import uvicorn
 from fastapi import APIRouter, FastAPI
 
+from logic.context import DaemonContext
 from routers import daemon, server
 
 app = FastAPI()
 router = APIRouter()
+
+app.state.context = DaemonContext()
 
 app.include_router(
     daemon.router,
@@ -25,4 +28,4 @@ async def root():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=9876, log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=9876, log_level="info")

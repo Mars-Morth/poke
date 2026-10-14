@@ -1,7 +1,6 @@
 import ipaddress
 import logging
-import socket
-import time
+import subprocess
 from typing import ClassVar
 
 from states import (
@@ -16,6 +15,13 @@ from states import (
 logging.basicConfig(level=logging.DEBUG)
 
 
+def get_tailscale_ip() -> str:
+    result = subprocess.run(
+        ["tailscale", "ip", "-4"], check=False, capture_output=True, text=True
+    )
+    return result.stdout.strip()
+
+
 class DaemonContext:
     ALLOWED_STATES: ClassVar[list] = [
         Bootstrapping,
@@ -25,9 +31,9 @@ class DaemonContext:
         Relinquishing,
     ]
 
-    def __init__(self, state: State) -> None:
+    def __init__(self) -> None:
         self._logger = logging.getLogger(type(self).__name__)
-        self._LOCAL_IP = ipaddress.IPv4Address
+        self._LOCAL_IP = get_tailscale_ip()
         self._PORT = 9876
         self._PROBE_TIMEOUT = 20000
         self._HEARTBEAT_INTERVAL = 1000
@@ -40,7 +46,7 @@ class DaemonContext:
         self._http_session = None
         self._active_battles = {}
 
-        self._current_state = state
+        self._current_state = Bootstrapping(self)
 
         self._server_flag = False
 
@@ -52,14 +58,14 @@ class DaemonContext:
         return self._current_state
 
     @current_state.setter
-    def current_state(self, next_state: State):
+    def current_state(self, next_state: type[State]):
         if next_state not in self.ALLOWED_STATES:
             raise ValueError
-        self._current_state = next_state
+        self._current_state = next_state(self)
 
-    def transition_to(self, new_state: State):
+    def transition_to(self, new_state: type[State]):
         self.current_state.exit()
-        self._current_state = new_state
+        self.current_state = new_state
         self.current_state.enter()
 
     def start(self):

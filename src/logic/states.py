@@ -1,6 +1,10 @@
-from abc import ABC, abstractmethod
+from __future__ import annotations
 
-from context import DaemonContext
+from abc import ABC
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from context import DaemonContext
 
 
 class State(ABC):
