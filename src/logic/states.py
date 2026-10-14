@@ -3,19 +3,20 @@ from abc import ABC, abstractmethod
 
 class State(ABC):
     @abstractmethod
-    def __init__(self, state):
-        self.state = state
+    def __init__(self, context):
+        self.context = context
+        self.name = "State"
 
     @property
-    def state(self):
-        return self._state
+    def name(self):
+        return self._name
 
-    @state.setter
-    def state(self, state):
-        self._state = state
+    @name.setter
+    def name(self, name):
+        self._name = name
 
     @abstractmethod
-    def enter(self, state):
+    def enter(self, name):
         pass
 
     @abstractmethod
