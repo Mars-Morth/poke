@@ -6,8 +6,8 @@ After=default.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/opt/poke/client
-ExecStart=%h/opt/poke/client/run_daemon.sh
+WorkingDirectory=%h/opt/poke/src
+ExecStart=%h/opt/poke/src/run_daemon.sh
 Restart=on-failure
 
 [Install]

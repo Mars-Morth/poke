@@ -14,7 +14,7 @@ async def fetch_data(session, url):
 
 
 async def main():
-    url = "https://npn-s03320.taile7fded.ts.net/"
+    url = "http://npn-s03320.taile7fded.ts.net:9876/"
 
     async with aiohttp.ClientSession() as session:
         # tasks = [fetch_data(session, url) for url in url]

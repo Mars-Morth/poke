@@ -8,7 +8,7 @@ PROJECT_DIR="${HOME}/opt/poke/"
 yes | rm -r ${PROJECT_DIR} || true
 mkdir -p ${PROJECT_DIR}
 
-if [[ $1 -eq "local" ]]; then
+if [[ "$1" == "local" ]]; then
 	echo "Getting local project"
 	cp -a . ${PROJECT_DIR}
 	cd ${PROJECT_DIR}
@@ -26,7 +26,7 @@ echo "*********************************************************************"
 echo "*********************************************************************"
 
 # daemon and cli install
-cd client
+cd src
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -42,7 +42,7 @@ echo "*********************************************************************"
 # systemd stuff
 cd ${PROJECT_DIR}
 mkdir -p ${HOME}/.config/systemd/user
-cp ./client/poke.service ~/.config/systemd/user/poke.service
+cp ./src/poke.service ~/.config/systemd/user/poke.service
 systemctl --user daemon-reload
 systemctl --user enable --now poke.service  # NOTE: enable to be on start
 systemctl --user status poke.service
