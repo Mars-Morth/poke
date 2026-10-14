@@ -44,7 +44,8 @@ class DaemonContext:
 
         self._server_flag = False
 
-        self.PEER_IPS = self._discover_peers()
+        # self.PEER_IPS = self._discover_peers()
+        self.PEER_IPS = []
 
     @property
     def current_state(self):
