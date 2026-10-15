@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 import aiohttp
 
@@ -14,11 +13,11 @@ async def fetch_data(session, url):
 
 
 async def main():
-    url = "http://127.0.0.1:9876/"
+    url = "http://npn-s03317.taile7fded.ts.net:9876/server"  # TEST: this is hardcoded
 
     async with aiohttp.ClientSession() as session:
         # tasks = [fetch_data(session, url) for url in url]
-        tasks = (fetch_data(session, url))
+        tasks = fetch_data(session, url)
         results = await asyncio.gather(tasks)
 
         for result in results:
