@@ -1,3 +1,23 @@
+#!/usr/bin/env python3
+import os
+import sys
+from pathlib import Path
+
+# Automatically run within the Poke virtual environment if not already active
+_venv_python = Path(__file__).resolve().parent / "venv" / "bin" / "python"
+if not _venv_python.is_file():
+    _opt_venv = Path.home() / "opt" / "poke" / "src" / "venv" / "bin" / "python"
+    if _opt_venv.is_file():
+        _venv_python = _opt_venv
+
+if _venv_python.is_file() and sys.executable != str(_venv_python):
+    os.execv(str(_venv_python), [str(_venv_python), str(Path(__file__).resolve())] + sys.argv[1:])
+
+_src_dir = str(Path(__file__).resolve().parent)
+if _src_dir not in sys.path:
+    sys.path.insert(0, _src_dir)
+
+import argparse
 import asyncio
 
 import aiohttp
@@ -25,4 +45,6 @@ async def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Poké CLI")
+    parser.parse_args()
     asyncio.run(main())
