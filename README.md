@@ -4,6 +4,13 @@ Poke is a Pokémon-style command-line interface (CLI) battler.
 
 CLI sprites and artwork are displayed using [pokemon-colorscripts](https://gitlab.com/phoneybadger/pokemon-colorscripts).
 
+Run `poke` to display daemon status, or `poke serve` to advertise the daemon as a server.
+Use `poke --help` for usage and `poke --verbose` for debug logging.
+
+The installer creates a launcher that runs the CLI with its virtualenv Python.
+For development, run `src/venv/bin/python src/poke_cli.py` after creating that
+virtualenv and installing `src/requirements.txt`.
+
 ---
 
 ## Legal Disclaimer & Non-Affiliation
