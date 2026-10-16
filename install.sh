@@ -581,9 +581,12 @@ step_configure_systemd() {
 
 step_link_to_usr_bin() {
   ensure_sudo "Linking Poké CLI to /usr/bin"
-  cp "${PROJECT_DIR}/src/poke_cli.py" "${PROJECT_DIR}/src/venv/bin/poke_cli.py"
-  chmod +x "${PROJECT_DIR}/src/venv/bin/poke_cli.py"
-  sudo ln -sf "${PROJECT_DIR}/src/venv/bin/poke_cli.py" /usr/bin/poke
+  local launcher="${PROJECT_DIR}/src/venv/bin/poke"
+  printf '#!/bin/bash\nexec %q %q "$@"\n' \
+    "${PROJECT_DIR}/src/venv/bin/python" \
+    "${PROJECT_DIR}/src/poke_cli.py" >"$launcher"
+  chmod +x "$launcher"
+  sudo ln -sf "$launcher" /usr/bin/poke
 }
 
 step_setup_tailscale() {

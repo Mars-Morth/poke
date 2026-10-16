@@ -1,88 +1,70 @@
 #!/usr/bin/env python3
-import os
-import sys
-from pathlib import Path
-
-# Determine the Poke source directory
-_file_path = Path(__file__).resolve()
-_src_dir = None
-for candidate in [
-    _file_path.parent,
-    _file_path.parent.parent.parent,
-    Path.home() / "opt" / "poke" / "src",
-]:
-    if (candidate / "logic").is_dir():
-        _src_dir = candidate
-        break
-
-if _src_dir is not None and str(_src_dir) not in sys.path:
-    sys.path.insert(0, str(_src_dir))
-
-# Determine the Poke virtualenv Python
-_venv_python = None
-for candidate in [
-    _file_path.parent / "python",
-    _file_path.parent / "venv" / "bin" / "python",
-    (_src_dir / "venv" / "bin" / "python") if _src_dir else None,
-    Path.home() / "opt" / "poke" / "src" / "venv" / "bin" / "python",
-]:
-    if candidate and candidate.is_file():
-        _venv_python = candidate
-        break
-
-# Automatically run within the Poke virtual environment if not already active
-if _venv_python and sys.executable != str(_venv_python):
-    os.execv(
-        str(_venv_python),
-        [str(_venv_python), str(_file_path)] + sys.argv[1:],
-    )
-
 import argparse
 import asyncio
 import logging
+import sys
 
 import aiohttp
 
-logging.basicConfig(level=logging.DEBUG)  # TEST: enable debug logging
-LOGGER = logging.getLogger()
+LOGGER = logging.getLogger(__name__)
+DAEMON_BASE = "http://127.0.0.1:9876"  # TEST: hardcoded to localhost
 
 
 async def fetch_data(session, url):
-    print(f"Starting task: {url}")
     async with session.get(url) as response:
-        await asyncio.sleep(1)  # Simulating a delay
-        data = await response.json()
-        print(f"Completed task: {url}")
-        return data
+        response.raise_for_status()
+        return await response.json()
 
 
-async def main(args):
-    LOGGER.debug(f"Called main with args: {args}")
-
-    daemon_base = "http://127.0.0.1:9876"
-    server_url = f"{daemon_base}/server/"
-
-    async with aiohttp.ClientSession() as session:
-        if args.serve:
-            async with session.post(f"{daemon_base}/client/serve") as response:
+async def run(args):
+    LOGGER.debug("Called with args: %s", args)
+    timeout = aiohttp.ClientTimeout(total=10)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        if args.command == "serve":
+            async with session.post(f"{DAEMON_BASE}/client/serve") as response:
+                response.raise_for_status()
                 serve_result = await response.json()
-                LOGGER.debug(f"Daemon serve response: {serve_result}")
+                LOGGER.debug("Daemon serve response: %s", serve_result)
 
-        tasks = fetch_data(session, server_url)
-        results = await asyncio.gather(tasks)
+        result = await fetch_data(session, f"{DAEMON_BASE}/server")
+        print(result)
 
-        for result in results:
-            print(result)
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="poke", description="Poké CLI")
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="enable debug logging"
+    )
+    commands = parser.add_subparsers(dest="command")
+    serve = commands.add_parser("serve", help="advertise your Poké daemon as a server")
+    serve.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        default=argparse.SUPPRESS,
+        help="enable debug logging",
+    )
+    args = parser.parse_args(argv)
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.WARNING,
+        format="%(levelname)s: %(message)s",
+    )
+
+    try:
+        asyncio.run(run(args))
+    except aiohttp.ClientConnectionError:
+        print(f"poke: cannot connect to daemon at {DAEMON_BASE}", file=sys.stderr)
+        return 1
+    except asyncio.TimeoutError:
+        print("poke: daemon request timed out", file=sys.stderr)
+        return 1
+    except (aiohttp.ClientError, ValueError) as exc:
+        print(f"poke: daemon request failed: {exc}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        return 130
+    return 0
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="poke", description="Poké CLI")
-    parser.add_argument(
-        "serve",
-        nargs="?",
-        default=None,
-        help="advertise your Poké daemon as a server",
-    )
-
-    args = parser.parse_args()
-    asyncio.run(main(args))
+    sys.exit(main())
