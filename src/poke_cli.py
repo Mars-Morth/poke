@@ -64,7 +64,7 @@ async def main(args):
 
     async with aiohttp.ClientSession() as session:
         if args.serve:
-            async with session.post(f"{daemon_base}/daemon/serve") as response:
+            async with session.post(f"{daemon_base}/client/serve") as response:
                 serve_result = await response.json()
                 LOGGER.debug(f"Daemon serve response: {serve_result}")
 
