@@ -9,7 +9,7 @@ TRAINERS = [
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 def root(request: Request):
     return {
         "status": "ok",

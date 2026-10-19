@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import APIRouter, FastAPI
 
 from logic.context import DaemonContext
-from routers import daemon, server
+from routers import client, server
 
 app = FastAPI()
 router = APIRouter()
@@ -10,9 +10,9 @@ router = APIRouter()
 app.state.context = DaemonContext()
 
 app.include_router(
-    daemon.router,
-    prefix="/daemon",
-    tags=["daemon"],
+    client.router,
+    prefix="/client",
+    tags=["client"],
 )
 
 app.include_router(
