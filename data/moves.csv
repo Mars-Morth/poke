@@ -1,0 +1,5 @@
+name,type,max_pp,target_type,effects,accuracy,priority,description
+Tackle,normal,35,single,damage:40:physical,100,0,Inflicts regular damage with no additional effect.
+Growl,normal,40,single,stat:atk:-1:100,100,0,Lowers the target's Attack by one stage.
+Scratch,normal,35,single,damage:40:physical,100,0,Inflicts regular damage with no additional effect.
+Tail Whip,normal,30,single,stat:defe:-1:100,100,0,Lowers the target's Defence by one stage.
